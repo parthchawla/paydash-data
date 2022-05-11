@@ -19,34 +19,35 @@ def database_cursor():
                          port=3306)
     return [db, db.cursor()]
 
+def get_workers(msr_ids):
 
-def get_workers(msr_id):
-
+    tup = tuple(msr_ids)
     db_cur = database_cursor()
     db = db_cur[0]
-    df = pd.read_sql("""SELECT * FROM workers WHERE %s>0 LIMIT 1""" % msr_id, con=db)
+    df = pd.read_sql("""SELECT * FROM workers WHERE id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s'""" % tup, con=db)
     db.close()
 
     return df
 
-
 def chunker(lst, n):
     return (lst[pos:pos + n] for pos in xrange(0, len(lst), n))
-
 
 if __name__ == '__main__':
 
     df = pd.read_csv("/Users/parthchawla/musters_new.csv")
+    df = df.loc[df['done'] == 1]
     ids = df['msr_id'].tolist()
-    chunked = []
+    print 'No. of musters with workers pulled:',len(ids)
 
+    chunked = []
     for chunk in chunker(ids, 10):
         chunked.append(chunk)
+    print 'No. of chunks:',len(chunked)
 
-    for chunk in chunked[:2]:
-        
+    workers = pd.DataFrame(columns = ['id','ac_credited_date','account_no','address','age_at_reg','average_daily_wage','bank_po_name','bpl_status','current_account_no','current_bank_po','gender','hoh_name','job_card_number','msr_id','msr_no','no_days_work_for_muster','panchayat_code','pending_payment_for_muster','person_id','po_address_branch_code','po_code_branch_name','reg_date','status','tool_payments','total_cash_payments','total_to_be_paid_for_muster','travel_food_expenses','village_name','wagelist_no','worker_code','worker_name'])
+    for i,chunk in enumerate(chunked):
+        print 'Chunk',i+1
+        worker_chunk = get_workers(chunk)
+        workers = workers.append(worker_chunk)
 
-    print chunked
-    exit()
-    workers = get_workers(1)
-    print workers
+    workers.to_csv("/Users/parthchawla/workers.csv")
