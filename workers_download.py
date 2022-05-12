@@ -24,7 +24,7 @@ def get_workers(msr_ids):
     tup = tuple(msr_ids)
     db_cur = database_cursor()
     db = db_cur[0]
-    df = pd.read_sql("""SELECT * FROM workers WHERE id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s' or id='%s'""" % tup, con=db)
+    df = pd.read_sql("""SELECT * FROM workers WHERE msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s' or msr_id='%s'""" % tup, con=db)
     db.close()
 
     return df
